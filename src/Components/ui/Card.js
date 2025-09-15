@@ -19,3 +19,6 @@ export function CardDescription({ children }) {
 export function CardContent({ children }) {
   return <div>{children}</div>;
 }
+export function CardFooter({ children, className }) {
+  return <div className={`p-4 border-t ${className}`}>{children}</div>;
+}
