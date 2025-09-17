@@ -1,6 +1,7 @@
 "use client";
-
+import React from 'react';
 import { useState } from "react";
+import { useNavigate } from 'react-router-dom';
 import { Button } from "./ui/Button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "./ui/Card";
 import { Input } from "./ui/Input";
@@ -22,6 +23,9 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import FreetrialForm from "./FreetrialForm";
+import About from './About';
+import PricingSection from './PricingSection';
+
 
 function HomePage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -29,24 +33,30 @@ function HomePage() {
   const features = [
     {
       icon: Zap,
-      title: "Lightning Fast",
-      description: "Process workflows 10x faster with our optimized engine"
+      title: " Gestion des ventes & achats",
+      description: "Suivi des commandes, factures et paiements."
     },
     {
       icon: Users,
-      title: "Team Collaboration",
-      description: "Real-time collaboration tools for seamless teamwork"
+      title: " CRM & Clients",
+      description: "Base de données, fidélisation et suivi des prospects."
     },
     {
       icon: BarChart3,
-      title: "Advanced Analytics",
-      description: "Gain insights with comprehensive reporting dashboards"
+      title: "Tableau de bord",
+      description: "Rapports clairs et indicateurs en temps réel."
     },
     {
       icon: Shield,
-      title: "Enterprise Security",
-      description: "Bank-level encryption and compliance standards"
+      title: " Multi-secteurs ",
+      description: "Adaptée aux PME, agences, boutiques, restaurants."
+    },
+    {
+      icon: Shield,
+      title: "  Collaboration ",
+      description: "Travail en équipe et gestion des accès."
     }
+
   ];
 
   const testimonials = [
@@ -70,49 +80,7 @@ function HomePage() {
     }
   ];
 
-  const pricingPlans = [
-    {
-      name: "Starter",
-      price: "$29",
-      period: "per month",
-      description: "Perfect for small teams getting started",
-      features: [
-        "Up to 5 users",
-        "Basic analytics",
-        "Email support",
-        "1GB storage"
-      ],
-      popular: false
-    },
-    {
-      name: "Professional",
-      price: "$79",
-      period: "per month",
-      description: "For growing businesses",
-      features: [
-        "Up to 25 users",
-        "Advanced analytics",
-        "Priority support",
-        "10GB storage",
-        "API access"
-      ],
-      popular: true
-    },
-    {
-      name: "Enterprise",
-      price: "Custom",
-      period: "",
-      description: "For large organizations",
-      features: [
-        "Unlimited users",
-        "Custom analytics",
-        "24/7 dedicated support",
-        "Unlimited storage",
-        "Custom integrations"
-      ],
-      popular: false
-    }
-  ];
+
 
   return (
 
@@ -141,10 +109,10 @@ function HomePage() {
                 Fonctionnalités
               </a>
               <a href="#testimonials" className="text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors">
-                Avis
+                Parrinage
               </a>
               <a href="#pricing" className="text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors">
-                Payment
+                Tarifs
               </a>
               <a href="#contact" className="text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors">
                 Contact
@@ -197,9 +165,9 @@ function HomePage() {
                     Login
                   </button>
                 </Link>
-                <button className="w-full px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition">
+                <Button className="px-6 py-3 text-lg rounded-lg shadow bg-blue-600 hover:bg-blue-700 text-white transition">
                   Get Started
-                </button>
+                </Button>
               </div>
             </div>
           </div>
@@ -209,13 +177,17 @@ function HomePage() {
       {/* Hero Section */}
       <section className="py-20 md:py-28 bg-gradient-to-r from-blue-50 to-indigo-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 mb-6">
-              Transform Your Business with <span className="text-blue-600">Smart Solutions</span>
+          <div className="max-w-4xl mx-auto text-center">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 leading-snug mb-4">
+              La solution tout-en-un pour digitaliser et simplifier la gestion de votre business.{" "}<br />
+              <span className="text-blue-600">Smart Solutions</span>
             </h1>
-            <p className="text-xl text-gray-600 mb-10 max-w-2xl mx-auto">
-              The all-in-one platform that helps teams of all sizes work smarter, faster, and more efficiently.
+
+
+            <p className="text-base sm:text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
+              DigiTrack est une solution de gestion tout-en-un, conçue pour s’adapter à tous types d’activités. Elle centralise vos opérations en un seul outil, vous fait gagner du temps et améliore vos performances.
             </p>
+
             <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mt-6">
               <Button
                 size="lg"
@@ -228,29 +200,33 @@ function HomePage() {
               <Button
                 size="lg"
                 variant="outline"
-                className="px-8 py-3 text-lg font-semibold border-2 border-blue-600 text-blue-600 hover:bg-blue-50 transition duration-300 flex items-center"
+                className="px-8 py-3 text-lg font-semibold border-2 border-blue-600 text-blue-600 hover:bg-blue-100 transition duration-300 flex items-center"
               >
                 Watch Demo
                 <Play className="ml-2 h-5 w-5" />
               </Button>
             </div>
 
-            <p className="mt-6 text-gray-500">No credit card required • 14-day free trial</p>
+            <p className="mt-6 text-sm text-gray-500">
+              No credit card required • 14-day free trial
+            </p>
           </div>
         </div>
       </section>
+
 
       {/* Features Section */}
       <section id="features" className="py-20 bg-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Powerful Features</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Fonctionnalités principales
+            </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
               Everything you need to streamline operations and boost productivity
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
             {features.map((feature, index) => (
               <Card key={index} className="border border-gray-200 hover:shadow-lg transition-shadow">
                 <CardHeader>
@@ -305,74 +281,9 @@ function HomePage() {
       </section>
 
       {/* Pricing Section */}
-      <section id="pricing" className="py-20 bg-gradient-to-br from-gray-50 to-white">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Simple, Transparent Pricing</h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Choose the plan that works best for your team
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            {pricingPlans.map((plan, index) => (
-              <Card
-                key={index}
-                className={`relative overflow-hidden border border-gray-200 rounded-2xl shadow-sm transition-all duration-300 hover:shadow-lg ${plan.popular
-                  ? 'ring-2 ring-blue-500 border-blue-300 transform md:-translate-y-2'
-                  : ''
-                  }`}
-              >
-                {plan.popular && (
-                  <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-blue-500 to-indigo-600"></div>
-                )}
-
-                <div className={`p-8 ${plan.popular ? 'bg-blue-50' : 'bg-white'}`}>
-                  {plan.popular && (
-                    <div className="absolute top-6 right-6 bg-blue-500 text-white text-xs font-bold px-3 py-1 rounded-full">
-                      MOST POPULAR
-                    </div>
-                  )}
-
-                  <CardHeader className="text-center pb-6 pt-0">
-                    <CardTitle className="text-2xl font-bold text-gray-900">{plan.name}</CardTitle>
-                    <div className="mt-4">
-                      <span className="text-5xl font-extrabold text-gray-900">{plan.price}</span>
-                      {plan.period && <span className="text-gray-600">/{plan.period}</span>}
-                    </div>
-                    <CardDescription className="mt-3 text-gray-600">
-                      {plan.description}
-                    </CardDescription>
-                  </CardHeader>
-
-                  <CardContent className="px-0 pb-6">
-                    <ul className="space-y-4">
-                      {plan.features.map((feature, featureIndex) => (
-                        <li key={featureIndex} className="flex items-start">
-                          <div className="flex-shrink-0 mt-1">
-                            <Check className="h-5 w-5 text-green-500" />
-                          </div>
-                          <span className="ml-3 text-gray-700">{feature}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </CardContent>
-
-                  <CardFooter className="px-0 pb-0">
-                    <Button
-                      className={`w-full py-6 text-base font-semibold rounded-lg transition-all ${plan.popular
-                        ? 'bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white shadow-lg'
-                        : 'bg-gray-900 hover:bg-gray-800 text-white'
-                        }`}
-                    >
-                      Get Started
-                    </Button>
-                  </CardFooter>
-                </div>
-              </Card>
-            ))}
-          </div>
-        </div>
+      <PricingSection />
+      <section>
+        <About />
       </section>
 
       {/* CTA Section */}
@@ -387,47 +298,109 @@ function HomePage() {
 
             {/* Logo & Description */}
             <div className="md:col-span-2">
-              <h3 className="text-3xl font-bold text-white mb-4 tracking-tight">DigiTrack</h3>
+              <h3 className="text-3xl font-bold text-white mb-4 tracking-tight">Contactez-nous</h3>
               <p className="text-gray-400 max-w-lg leading-relaxed mb-6">
-                Empowering businesses with smart solutions to streamline operations and drive growth through intuitive tools.
+                Une question, une démo ou un devis ?
+                Notre équipe DigiTrack est à votre écoute pour vous accompagner dans la digitalisation de votre entreprise.
+
               </p>
-              <p className="text-sm text-gray-500">&copy; 2025 DigiTrack. All rights reserved.</p>
+              <p className="text-sm text-gray-500">&copy; Ou remplissez directement notre formulaire de contact et nous reviendrons vers vous rapidement.
+                👉 Avec DigiTrack, simplifiez votre gestion et passez à la vitesse supérieure !
+              </p>
+            </div>
+            <div className="container">
+              <div className="f-items default-padding">
+                <div className="row">
+                  <div className="col-lg-4 col-md-6 item">
+                    <div className="f-item about">
+
+                      <div className="address">
+                        <ul>
+                          <li className="flex items-start space-x-4">
+                            <div className="icon text-blue-600">
+                              {/* Heroicon: Envelope Icon */}
+                              <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 12l-4 4m0 0l-4-4m4 4V8" />
+                              </svg>
+                            </div>
+                            <div className="info">
+                              <h5 className="font-semibold">Email:</h5>
+                              <span className="text-gray-700">contact@digitrack.com</span>
+                            </div>
+                          </li>
+
+                          <li className="flex items-start space-x-4">
+                            <div className="icon text-blue-600">
+                              {/* Heroicon: Phone Icon */}
+                              <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5h2l3 7-1.2 1.2a16 16 0 006.4 6.4L12 19l7 3v-2a2 2 0 00-2-2h-1l-2-4h2a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v1H5a2 2 0 00-2 2v1z" />
+                              </svg>
+                            </div>
+                            <div className="info">
+                              <h5 className="font-semibold">Phone:</h5>
+                              <span className="text-gray-700">
+                                +216 XX XXX XXX
+                              </span>
+                            </div>
+                          </li>
+                          <li className="flex items-start space-x-4">
+                            <div className="icon text-blue-600">
+                              {/* Heroicon: Location Marker Icon */}
+                              <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 11c1.1046 0 2-.8954 2-2s-.8954-2-2-2-2 .8954-2 2 .8954 2 2 2z" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 22s8-4.5 8-12a8 8 0 10-16 0c0 7.5 8 12 8 12z" />
+                              </svg>
+                            </div>
+                            <div className="info">
+                              <h5 className="font-semibold">Address:</h5>
+                              <span className="text-gray-700">
+                                Tunis, Tunisie
+                              </span>
+                            </div>
+                          </li>
+
+
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+
+
+
+
+
+
+                </div>
+              </div>
+
             </div>
 
             {/* Product Links */}
             <div>
               <h4 className="text-xl font-semibold text-white mb-4">Product</h4>
               <ul className="space-y-3 text-gray-400">
-                <li><a href="#" className="hover:text-white transition duration-200">Features</a></li>
-                <li><a href="#" className="hover:text-white transition duration-200">Pricing</a></li>
-                <li><a href="#" className="hover:text-white transition duration-200">Integrations</a></li>
-                <li><a href="#" className="hover:text-white transition duration-200">Roadmap</a></li>
+                <li><a href="#features" className="hover:text-white transition duration-200">Fonctionnalités</a></li>
+                <li><a href="#testimonials" className="hover:text-white transition duration-200">Parrinage</a></li>
+                <li><a href="#pricing" className="hover:text-white transition duration-200">Tarifs</a></li>
+                <li><a href="#contact" className="hover:text-white transition duration-200">Contact</a></li>
               </ul>
             </div>
 
             {/* Company Links */}
-            <div>
-              <h4 className="text-xl font-semibold text-white mb-4">Company</h4>
-              <ul className="space-y-3 text-gray-400">
-                <li><a href="#" className="hover:text-white transition duration-200">About</a></li>
-                <li><a href="#" className="hover:text-white transition duration-200">Blog</a></li>
-                <li><a href="#" className="hover:text-white transition duration-200">Careers</a></li>
-                <li><a href="#" className="hover:text-white transition duration-200">Contact</a></li>
-              </ul>
-            </div>
+
           </div>
 
           {/* Divider + Social Icons */}
           <div className="mt-12 border-t border-gray-800 pt-8 flex flex-col md:flex-row items-center justify-between">
             <p className="text-gray-500 text-sm mb-4 md:mb-0">Follow us for updates</p>
             <div className="flex space-x-5">
-              <a href="#" className="text-gray-400 hover:text-white transition">
+              <a href="https://www.facebook.com/" className="text-gray-400 hover:text-white transition">
                 <FacebookIcon className="w-5 h-5" />
               </a>
-              <a href="#" className="text-gray-400 hover:text-white transition">
+              <a href="https://x.com/" className="text-gray-400 hover:text-white transition">
                 <TwitterIcon className="w-5 h-5" />
               </a>
-              <a href="#" className="text-gray-400 hover:text-white transition">
+              <a href="https://fr.linkedin.com/" className="text-gray-400 hover:text-white transition">
                 <LinkedinIcon className="w-5 h-5" />
               </a>
             </div>
@@ -435,7 +408,8 @@ function HomePage() {
         </div>
       </footer>
 
+
     </div>
   );
 }
-export default HomePage
+export default HomePage;

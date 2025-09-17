@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import HomePage from "./Components/HomePage";
 import Login from "./Components/Login";
 import Register from "./Components/Register";
+import SubscriptionCalculator from './Components/SubscriptionCalculator';
 function App() {
   return (
     <Router>
@@ -11,6 +12,7 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/subscription-calculator" element={<SubscriptionCalculator />} />
       </Routes>
     </Router>
   );
