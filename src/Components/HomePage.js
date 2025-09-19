@@ -24,10 +24,14 @@ import {
 import { Link } from "react-router-dom";
 import FreetrialForm from "./FreetrialForm";
 import About from './About';
-import PricingSection from './PricingSection';
+import PricingMiniSection from './PricingMiniSection';
+import Header from './Header';
+import Footer from './Footer';
+
 
 
 function HomePage() {
+
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const features = [
@@ -82,97 +86,12 @@ function HomePage() {
 
 
 
+
   return (
 
     <div className="min-h-screen bg-white">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-white shadow-md transition-all duration-300">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            {/* Logo */}
-            <div className="flex items-center">
-              <a href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity duration-200">
-                <img
-                  src="assets/img/logo.png"
-                  alt="Logo"
-                  className="h-10 w-auto object-contain"
-                  loading="lazy"
-                  draggable="false"
-                />
-              </a>
-            </div>
-
-
-            {/* Desktop Navigation */}
-            <nav className="hidden md:flex space-x-8">
-              <a href="#features" className="text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors">
-                Fonctionnalités
-              </a>
-              <a href="#testimonials" className="text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors">
-                Parrinage
-              </a>
-              <a href="#pricing" className="text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors">
-                Tarifs
-              </a>
-              <a href="#contact" className="text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors">
-                Contact
-              </a>
-            </nav>
-
-            {/* Desktop CTA Buttons */}
-            <div className="hidden md:flex items-center space-x-4">
-              <Link to="/login">
-                <button className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-md hover:bg-gray-100 transition">
-                  Login
-                </button>
-              </Link>
-              <button className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition">
-                Get Started
-              </button>
-            </div>
-
-            {/* Mobile Menu Toggle */}
-            <div className="md:hidden">
-              <button
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="p-2 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                {isMenuOpen ? <X className="h-6 w-6 text-gray-700" /> : <Menu className="h-6 w-6 text-gray-700" />}
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Mobile Menu */}
-        {isMenuOpen && (
-          <div className="md:hidden bg-white shadow-md border-t border-gray-200">
-            <div className="px-4 py-4 space-y-3">
-              <a href="#features" className="block text-sm text-gray-700 hover:text-blue-600">
-                Features
-              </a>
-              <a href="#testimonials" className="block text-sm text-gray-700 hover:text-blue-600">
-                Testimonials
-              </a>
-              <a href="#pricing" className="block text-sm text-gray-700 hover:text-blue-600">
-                Pricing
-              </a>
-              <a href="#contact" className="block text-sm text-gray-700 hover:text-blue-600">
-                Contact
-              </a>
-              <div className="pt-4 border-t border-gray-200 space-y-3">
-                <Link to="/login">
-                  <button className="w-full px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-md hover:bg-gray-100 transition">
-                    Login
-                  </button>
-                </Link>
-                <Button className="px-6 py-3 text-lg rounded-lg shadow bg-blue-600 hover:bg-blue-700 text-white transition">
-                  Get Started
-                </Button>
-              </div>
-            </div>
-          </div>
-        )}
-      </header>
+      <Header/>
 
       {/* Hero Section */}
       <section className="py-20 md:py-28 bg-gradient-to-r from-blue-50 to-indigo-50">
@@ -281,7 +200,7 @@ function HomePage() {
       </section>
 
       {/* Pricing Section */}
-      <PricingSection />
+      <PricingMiniSection />
       <section>
         <About />
       </section>
@@ -292,121 +211,8 @@ function HomePage() {
       </section>
 
       {/* Footer */}
-      <footer id="contact" className="bg-gray-900 text-white py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
+      <Footer/>
 
-            {/* Logo & Description */}
-            <div className="md:col-span-2">
-              <h3 className="text-3xl font-bold text-white mb-4 tracking-tight">Contactez-nous</h3>
-              <p className="text-gray-400 max-w-lg leading-relaxed mb-6">
-                Une question, une démo ou un devis ?
-                Notre équipe DigiTrack est à votre écoute pour vous accompagner dans la digitalisation de votre entreprise.
-
-              </p>
-              <p className="text-sm text-gray-500">&copy; Ou remplissez directement notre formulaire de contact et nous reviendrons vers vous rapidement.
-                👉 Avec DigiTrack, simplifiez votre gestion et passez à la vitesse supérieure !
-              </p>
-            </div>
-            <div className="container">
-              <div className="f-items default-padding">
-                <div className="row">
-                  <div className="col-lg-4 col-md-6 item">
-                    <div className="f-item about">
-
-                      <div className="address">
-                        <ul>
-                          <li className="flex items-start space-x-4">
-                            <div className="icon text-blue-600">
-                              {/* Heroicon: Envelope Icon */}
-                              <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 12l-4 4m0 0l-4-4m4 4V8" />
-                              </svg>
-                            </div>
-                            <div className="info">
-                              <h5 className="font-semibold">Email:</h5>
-                              <span className="text-gray-700">contact@digitrack.com</span>
-                            </div>
-                          </li>
-
-                          <li className="flex items-start space-x-4">
-                            <div className="icon text-blue-600">
-                              {/* Heroicon: Phone Icon */}
-                              <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5h2l3 7-1.2 1.2a16 16 0 006.4 6.4L12 19l7 3v-2a2 2 0 00-2-2h-1l-2-4h2a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v1H5a2 2 0 00-2 2v1z" />
-                              </svg>
-                            </div>
-                            <div className="info">
-                              <h5 className="font-semibold">Phone:</h5>
-                              <span className="text-gray-700">
-                                +216 XX XXX XXX
-                              </span>
-                            </div>
-                          </li>
-                          <li className="flex items-start space-x-4">
-                            <div className="icon text-blue-600">
-                              {/* Heroicon: Location Marker Icon */}
-                              <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 11c1.1046 0 2-.8954 2-2s-.8954-2-2-2-2 .8954-2 2 .8954 2 2 2z" />
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 22s8-4.5 8-12a8 8 0 10-16 0c0 7.5 8 12 8 12z" />
-                              </svg>
-                            </div>
-                            <div className="info">
-                              <h5 className="font-semibold">Address:</h5>
-                              <span className="text-gray-700">
-                                Tunis, Tunisie
-                              </span>
-                            </div>
-                          </li>
-
-
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
-
-
-
-
-
-
-                </div>
-              </div>
-
-            </div>
-
-            {/* Product Links */}
-            <div>
-              <h4 className="text-xl font-semibold text-white mb-4">Product</h4>
-              <ul className="space-y-3 text-gray-400">
-                <li><a href="#features" className="hover:text-white transition duration-200">Fonctionnalités</a></li>
-                <li><a href="#testimonials" className="hover:text-white transition duration-200">Parrinage</a></li>
-                <li><a href="#pricing" className="hover:text-white transition duration-200">Tarifs</a></li>
-                <li><a href="#contact" className="hover:text-white transition duration-200">Contact</a></li>
-              </ul>
-            </div>
-
-            {/* Company Links */}
-
-          </div>
-
-          {/* Divider + Social Icons */}
-          <div className="mt-12 border-t border-gray-800 pt-8 flex flex-col md:flex-row items-center justify-between">
-            <p className="text-gray-500 text-sm mb-4 md:mb-0">Follow us for updates</p>
-            <div className="flex space-x-5">
-              <a href="https://www.facebook.com/" className="text-gray-400 hover:text-white transition">
-                <FacebookIcon className="w-5 h-5" />
-              </a>
-              <a href="https://x.com/" className="text-gray-400 hover:text-white transition">
-                <TwitterIcon className="w-5 h-5" />
-              </a>
-              <a href="https://fr.linkedin.com/" className="text-gray-400 hover:text-white transition">
-                <LinkedinIcon className="w-5 h-5" />
-              </a>
-            </div>
-          </div>
-        </div>
-      </footer>
 
 
     </div>

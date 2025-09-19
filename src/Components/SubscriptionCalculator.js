@@ -1,386 +1,490 @@
-// filename=subscription-calculator.jsx
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from "react";
 import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
 } from "./ui/Card";
 import { Label } from "./ui/label";
 import { Input } from "./ui/Input";
 import { Button } from "./ui/Button";
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow
-} from './ui/Table';
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "./ui/Table";
 import {
-    BarChart,
-    Bar,
-    PieChart,
-    Pie,
-    Cell,
-    XAxis,
-    YAxis,
-    CartesianGrid,
-    Tooltip,
-    Legend,
-    ResponsiveContainer
+  BarChart,
+  Bar,
+  PieChart,
+  Pie,
+  Cell,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
 } from "recharts";
 import { Users, Building, Store, Calendar } from "lucide-react";
+import Header from "./Header";
+import Footer from "./Footer";
 
 // Pricing constants
 const PRICING = {
-    base: {
-        monthly: 299,
-        yearly: 2990 // 10 months price for yearly
+  base: {
+    monthly: 299,
+    yearly: 2990, // 10 months price for yearly
+  },
+  additional: {
+    enterprise: {
+      monthly: 199,
+      yearly: 1990,
     },
-    additional: {
-        enterprise: {
-            monthly: 199,
-            yearly: 1990
-        },
-        collaborator: {
-            monthly: 9,
-            yearly: 90
-        },
-        pos: {
-            monthly: 29,
-            yearly: 290
-        }
-    }
+    collaborator: {
+      monthly: 9,
+      yearly: 90,
+    },
+    pos: {
+      monthly: 29,
+      yearly: 290,
+    },
+  },
 };
 
 // Chart colors
-const COLORS = ['#3b82f6', '#10b981', '#8b5cf6', '#f59e0b'];
+const COLORS = ["#2563eb", "#16a34a", "#7c3aed", "#fde047"];
 
 function SubscriptionCalculator() {
-    // State for subscription configuration
-    const [subscription, setSubscription] = useState({
-        enterprises: 1,
-        collaborators: 5,
-        pointsOfSale: 2
-    });
+  const [subscription, setSubscription] = useState({
+    enterprises: 1,
+    collaborators: 5,
+    pointsOfSale: 1,
+  });
+  const [billingCycle, setBillingCycle] = useState("monthly");
 
-    // State for billing cycle
-    const [billingCycle, setBillingCycle] = useState('monthly');
+  // Handle input changes
+  const handleInputChange = (field, value) => {
+    const numValue = parseInt(value, 10) || 0;
+    setSubscription((prev) => ({
+      ...prev,
+      [field]: Math.max(0, numValue),
+    }));
+  };
 
-    // Handle input changes
-    const handleInputChange = (field, value) => {
-        const numValue = parseInt(value) || 0;
-        setSubscription(prev => ({
-            ...prev,
-            [field]: Math.max(0, numValue)
-        }));
-    };
+  // Calculate costs
+  const baseCost = PRICING.base[billingCycle];
+  const enterpriseCost =
+    Math.max(0, subscription.enterprises - 1) *
+    PRICING.additional.enterprise[billingCycle];
+  const collaboratorCost =
+    Math.max(0, subscription.collaborators - 5) *
+    PRICING.additional.collaborator[billingCycle];
+  const posCost =
+    Math.max(0, subscription.pointsOfSale - 1) *
+    PRICING.additional.pos[billingCycle];
 
-    // Toggle billing cycle
-    const toggleBillingCycle = () => {
-        setBillingCycle(prev => prev === 'monthly' ? 'yearly' : 'monthly');
-    };
+  const totalCost = baseCost + enterpriseCost + collaboratorCost + posCost;
 
-    // Calculate costs
-    const baseCost = PRICING.base[billingCycle];
-    const enterpriseCost = Math.max(0, subscription.enterprises - 1) * PRICING.additional.enterprise[billingCycle];
-    const collaboratorCost = Math.max(0, subscription.collaborators - 5) * PRICING.additional.collaborator[billingCycle];
-    const posCost = Math.max(0, subscription.pointsOfSale - 2) * PRICING.additional.pos[billingCycle];
+  // Memoize derived data to avoid recalculations on every render
+  const costBreakdownData = useMemo(
+    () =>
+      [
+        { name: "Base Plan", value: baseCost },
+        { name: "Enterprises", value: enterpriseCost },
+        { name: "Collaborators", value: collaboratorCost },
+        { name: "Points of Sale", value: posCost },
+      ].filter((item) => item.value > 0),
+    [baseCost, enterpriseCost, collaboratorCost, posCost]
+  );
 
-    const totalCost = baseCost + enterpriseCost + collaboratorCost + posCost;
+  const resourceUsageData = useMemo(
+    () => [
+      { name: "Enterprises", used: subscription.enterprises, included: 1 },
+      { name: "Collaborators", used: subscription.collaborators, included: 5 },
+      { name: "Points of Sale", used: subscription.pointsOfSale, included: 1 },
+    ],
+    [subscription.enterprises, subscription.collaborators, subscription.pointsOfSale]
+  );
 
-    // Chart data
-    const costBreakdownData = [
-        { name: 'Base Plan', value: baseCost },
-        { name: 'Enterprises', value: enterpriseCost },
-        { name: 'Collaborators', value: collaboratorCost },
-        { name: 'Points of Sale', value: posCost }
-    ];
+  const pricingData = useMemo(
+    () => [
+      {
+        resource: "Base Plan",
+        included: "1 Enterprise, 5 Collaborators, 1 POS",
+        monthly: "$299",
+        yearly: "$2,990",
+      },
+      {
+        resource: "Additional Enterprise",
+        included: "Each",
+        monthly: "$199",
+        yearly: "$1,990",
+      },
+      {
+        resource: "Additional Collaborator",
+        included: "Each",
+        monthly: "$9",
+        yearly: "$90",
+      },
+      {
+        resource: "Additional Point of Sale",
+        included: "Each",
+        monthly: "$29",
+        yearly: "$290",
+      },
+    ],
+    []
+  );
 
-    const resourceUsageData = [
-        { name: 'Enterprises', used: subscription.enterprises, included: 1 },
-        { name: 'Collaborators', used: subscription.collaborators, included: 5 },
-        { name: 'Points of Sale', used: subscription.pointsOfSale, included: 2 }
-    ];
+  return (
+    <div className="flex flex-col min-h-screen bg-gray-50 font-sans antialiased">
+      <Header />
 
-    // Pricing table data
-    const pricingData = [
-        { resource: 'Base Plan', included: '1 Enterprise, 5 Collaborators, 2 POS', monthly: '$299', yearly: '$2,990' },
-        { resource: 'Additional Enterprise', included: 'Each', monthly: '$199', yearly: '$1,990' },
-        { resource: 'Additional Collaborator', included: 'Each', monthly: '$9', yearly: '$90' },
-        { resource: 'Additional Point of Sale', included: 'Each', monthly: '$29', yearly: '$290' }
-    ];
+      <main className="flex-grow py-20 px-6 md:px-10">
+        <div className="max-w-7xl mx-auto">
+          {/* Page Title / Description */}
+          <div className="text-center mb-16">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-gray-900 mb-4 tracking-tight">
+              Subscription Calculator
+            </h1>
+            <p className="text-base text-gray-700 max-w-3xl mx-auto">
+              Configure your subscription plan and see a detailed cost breakdown
+              based on your business needs.
+            </p>
+          </div>
 
-    return (
-        <div className="min-h-screen bg-gradient-to-br from-white via-slate-50 to-slate-100 py-16 px-4 sm:px-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 md:gap-10">
+            {/* Configuration Panel */}
+            <div className="lg:col-span-1 space-y-8">
+              <Card className="shadow rounded-2xl border-none bg-white p-6 transition-transform transform hover:scale-105 hover:shadow-xl duration-300">
+                <CardHeader className="p-0 mb-6">
+                  <CardTitle className="flex items-center gap-3 text-2xl font-bold text-gray-800">
+                    <Calendar className="h-6 w-6 text-blue-600" />
+                    Subscription Configuration
+                  </CardTitle>
+                  <CardDescription className="text-gray-600 mt-2">
+                    Adjust the values below to get a real-time calculation.
+                  </CardDescription>
+                </CardHeader>
 
-            <div className="max-w-6xl mx-auto">
-                <div className="text-center mb-12">
-                    <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                        Subscription Calculator
-                    </h1>
-                    <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                        Configure your subscription plan and see the cost breakdown based on your business needs
-                    </p>
-                </div>
+                <CardContent className="p-0 space-y-8">
+                  {/* Billing Cycle Toggle */}
+                  <div className="flex flex-col sm:flex-row gap-4 items-center sm:justify-between">
+                    <span className="font-semibold text-gray-700">
+                      Billing Cycle:
+                    </span>
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    {/* Configuration Panel */}
-                    <div className="lg:col-span-1">
-                        <Card className="shadow-xl border border-gray-200 rounded-xl bg-white transition-transform hover:scale-[1.01]">
+                    <div className="inline-flex rounded-full border border-gray-200 bg-gray-100 shadow-inner overflow-hidden">
+                      <Button
+                        type="button"
+                        onClick={() => setBillingCycle("monthly")}
+                        className={`px-5 py-2 text-sm font-medium transition-all duration-200 rounded-l-full ${
+                          billingCycle === "monthly"
+                            ? "bg-blue-600 text-white shadow"
+                            : "text-gray-700 bg-white hover:bg-gray-100"
+                        }`}
+                      >
+                        Monthly
+                      </Button>
 
-                            <CardHeader>
-                                <CardTitle className="flex items-center gap-2">
-                                    <Calendar className="h-5 w-5 text-blue-500" />
-                                    Subscription Configuration
-                                </CardTitle>
-                                <CardDescription>
-                                    Adjust the values below to calculate your subscription cost
-                                </CardDescription>
-                            </CardHeader>
-                            <CardContent className="space-y-6">
-                                {/* Billing Cycle Toggle */}
-                                <div className="flex flex-col sm:flex-row gap-4 items-center">
-                                    <span className="font-medium text-gray-700">Billing Cycle:</span>
-                                    <div className="inline-flex rounded-lg border border-gray-300 bg-white shadow-sm overflow-hidden">
-                                        <Button
-                                            onClick={() => setBillingCycle('monthly')}
-                                            className={`px-4 py-2 text-sm font-medium transition-all duration-200 
-            ${billingCycle === 'monthly'
-                                                    ? 'bg-blue-600 text-white hover:bg-blue-700'
-                                                    : 'bg-white text-gray-700 hover:bg-gray-100'}
-            rounded-none`}
-                                        >
-                                            Monthly
-                                        </Button>
-                                        <Button
-                                            onClick={() => setBillingCycle('yearly')}
-                                            className={`px-4 py-2 text-sm font-medium transition-all duration-200 
-            ${billingCycle === 'yearly'
-                                                    ? 'bg-blue-600 text-white hover:bg-blue-700'
-                                                    : 'bg-white text-gray-700 hover:bg-gray-100'}
-            rounded-none border-l border-gray-300 flex items-center gap-2`}
-                                        >
-                                            Yearly
-                                            <span className="bg-yellow-100 text-yellow-800 text-xs px-2 py-0.5 rounded-full">
-                                                Save 17%
-                                            </span>
-                                        </Button>
-                                    </div>
+                      <Button
+                        type="button"
+                        onClick={() => setBillingCycle("yearly")}
+                        className={`px-5 py-2 text-sm font-medium transition-all duration-200 flex items-center gap-2 rounded-r-full ${
+                          billingCycle === "yearly"
+                            ? "bg-blue-600 text-white shadow"
+                            : "text-gray-700 bg-white hover:bg-gray-100"
+                        }`}
+                      >
+                        Yearly
+                        <span className="bg-yellow-200 text-yellow-800 text-xs font-semibold px-2 py-0.5 rounded-full">
+                          Save 30%
+                        </span>
+                      </Button>
+                    </div>
+                  </div>
 
-                                </div>
-
-                                {/* Enterprise Input */}
-                                <div>
-                                    <Label htmlFor="enterprises" className="flex items-center gap-2 mb-2">
-                                        <Building className="text-sm font-medium text-gray-700" />
-                                        Enterprises
-                                    </Label>
-                                    <Input
-                                        id="enterprises"
-                                        type="number"
-                                        min="0"
-                                        value={subscription.enterprises}
-                                        onChange={(e) => handleInputChange('enterprises', e.target.value)}
-                                        className="w-full rounded-md border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-                                    />
-                                    <p className="text-sm text-gray-500 mt-1">
-                                        1 enterprise included in base plan
-                                    </p>
-                                </div>
-
-                                {/* Collaborators Input */}
-                                <div>
-                                    <Label htmlFor="collaborators" className="flex items-center gap-2 mb-2">
-                                        <Users className="text-sm font-medium text-gray-700" />
-                                        Collaborators
-                                    </Label>
-                                    <Input
-                                        id="collaborators"
-                                        type="number"
-                                        min="0"
-                                        value={subscription.collaborators}
-                                        onChange={(e) => handleInputChange('collaborators', e.target.value)}
-                                        className="w-full rounded-md border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-                                    />
-                                    <p className="text-sm text-gray-500 mt-1">
-                                        5 collaborators included in base plan
-                                    </p>
-                                </div>
-
-                                {/* Points of Sale Input */}
-                                <div>
-                                    <Label htmlFor="pointsOfSale" className="flex items-center gap-2 mb-2">
-                                        <Store className="h-4 w-4 text-purple-500" />
-                                        Points of Sale
-                                    </Label>
-                                    <Input
-                                        id="pointsOfSale"
-                                        type="number"
-                                        min="0"
-                                        value={subscription.pointsOfSale}
-                                        onChange={(e) => handleInputChange('pointsOfSale', e.target.value)}
-                                        className="w-full rounded-md border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-                                    />
-                                    <p className="text-sm text-gray-500 mt-1">
-                                        2 points of sale included in base plan
-                                    </p>
-                                </div>
-                            </CardContent>
-                        </Card>
-
-                        {/* Pricing Information */}
-                        <Card className="mt-8 shadow-lg">
-                            <CardHeader>
-                                <CardTitle>Pricing Details</CardTitle>
-                                <CardDescription>
-                                    Cost breakdown for each resource
-                                </CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <Table>
-                                    <TableHeader>
-                                        <TableRow>
-                                            <TableHead>Resource</TableHead>
-                                            <TableHead>Included</TableHead>
-                                            <TableHead>{billingCycle === 'monthly' ? 'Monthly' : 'Yearly'}</TableHead>
-                                        </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                        {pricingData.map((item, index) => (
-                                            <TableRow key={index}>
-                                                <TableCell className="font-medium">{item.resource}</TableCell>
-                                                <TableCell>{item.included}</TableCell>
-                                                <TableCell>{billingCycle === 'monthly' ? item.monthly : item.yearly}</TableCell>
-                                            </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                            </CardContent>
-                        </Card>
+                  {/* Input Fields */}
+                  <div className="space-y-6">
+                    {/* Enterprises */}
+                    <div className="flex flex-col gap-2">
+                      <Label
+                        htmlFor="enterprises"
+                        className="flex items-center gap-2 font-medium text-gray-700"
+                      >
+                        <Building className="h-4 w-4 text-blue-500" />
+                        Enterprises
+                      </Label>
+                      <Input
+                        id="enterprises"
+                        aria-label="Enterprises"
+                        type="number"
+                        min={0}
+                        value={subscription.enterprises}
+                        onChange={(e) =>
+                          handleInputChange("enterprises", e.target.value)
+                        }
+                        className="rounded-lg border border-gray-300 shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      />
+                      <p className="text-sm text-gray-600 mt-1">
+                        1 enterprise included in base plan.
+                      </p>
                     </div>
 
-                    {/* Results Panel */}
-                    <div className="lg:col-span-2">
-                        <Card className="shadow-lg h-full">
-                            <CardHeader>
-                                <CardTitle>Cost Summary</CardTitle>
-                                <CardDescription>
-                                    Your subscription cost based on current configuration
-                                </CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                    {/* Cost Breakdown */}
-                                    <div>
-                                        <h3 className="text-lg font-semibold mb-4">Cost Breakdown</h3>
-                                        <div className="space-y-3">
-                                            <div className="flex justify-between">
-                                                <span>Base Plan:</span>
-                                                <span className="font-medium">${baseCost.toLocaleString()}</span>
-                                            </div>
-                                            {subscription.enterprises > 1 && (
-                                                <div className="flex justify-between">
-                                                    <span>Additional Enterprises ({subscription.enterprises - 1}):</span>
-                                                    <span className="font-medium">${enterpriseCost.toLocaleString()}</span>
-                                                </div>
-                                            )}
-                                            {subscription.collaborators > 5 && (
-                                                <div className="flex justify-between">
-                                                    <span>Additional Collaborators ({subscription.collaborators - 5}):</span>
-                                                    <span className="font-medium">${collaboratorCost.toLocaleString()}</span>
-                                                </div>
-                                            )}
-                                            {subscription.pointsOfSale > 2 && (
-                                                <div className="flex justify-between">
-                                                    <span>Additional Points of Sale ({subscription.pointsOfSale - 2}):</span>
-                                                    <span className="font-medium">${posCost.toLocaleString()}</span>
-                                                </div>
-                                            )}
-                                            <div className="border-t border-gray-200 pt-3 mt-3">
-                                                <div className="flex justify-between text-lg font-bold">
-                                                    <span>Total ({billingCycle}):</span>
-                                                    <span className="text-blue-600 font-bold text-xl">${totalCost.toLocaleString()}</span>
-
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        {/* Resource Usage */}
-                                        <div className="mt-8">
-                                            <h3 className="text-lg font-semibold mb-4">Resource Usage</h3>
-                                            <div className="h-64">
-                                                <ResponsiveContainer width="100%" height="100%">
-                                                    <BarChart
-                                                        data={resourceUsageData}
-                                                        margin={{ top: 20, right: 30, left: 20, bottom: 50 }}
-                                                    >
-                                                        <CartesianGrid strokeDasharray="3 3" />
-                                                        <XAxis dataKey="name" />
-                                                        <YAxis />
-                                                        <Tooltip />
-                                                        <Legend />
-                                                        <Bar dataKey="used" name="Used" fill="#3b82f6" />
-                                                        <Bar dataKey="included" name="Included" fill="#10b981" />
-                                                    </BarChart>
-                                                </ResponsiveContainer>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* Cost Distribution Chart */}
-                                    <div className="h-64 bg-white rounded-lg shadow border border-gray-200 p-4">
-                                        <h3 className="text-lg font-semibold mb-4">Cost Distribution</h3>
-                                        <div className="h-64">
-                                            <ResponsiveContainer width="100%" height="100%">
-                                                <PieChart>
-                                                    <Pie
-                                                        data={costBreakdownData}
-                                                        cx="50%"
-                                                        cy="50%"
-                                                        labelLine={true}
-                                                        outerRadius={80}
-                                                        fill="#8884d8"
-                                                        dataKey="value"
-                                                        label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                                                    >
-                                                        {costBreakdownData.map((entry, index) => (
-                                                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                                                        ))}
-                                                    </Pie>
-                                                    <Tooltip formatter={(value) => [`$${value}`, 'Cost']} />
-                                                    <Legend />
-                                                </PieChart>
-                                            </ResponsiveContainer>
-                                        </div>
-
-                                        {/* Savings Info */}
-                                        {billingCycle === 'yearly' && (
-                                            <div className="mt-8 p-4 bg-yellow-100/70 rounded-lg border border-yellow-300 shadow-sm transition hover:shadow-md">
-                                                <h3 className="font-semibold text-yellow-800 flex items-center gap-2">
-                                                    <span className="bg-yellow-100 text-yellow-800 p-1 rounded-full">
-                                                        💰
-                                                    </span>
-                                                    Yearly Savings
-                                                </h3>
-                                                <p className="mt-2 text-yellow-700">
-                                                    You're saving ${(baseCost * 12 - baseCost * 10).toLocaleString()} per year
-                                                    by choosing the yearly plan!
-                                                </p>
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-                            </CardContent>
-                        </Card>
+                    {/* Collaborators */}
+                    <div className="flex flex-col gap-2">
+                      <Label
+                        htmlFor="collaborators"
+                        className="flex items-center gap-2 font-medium text-gray-700"
+                      >
+                        <Users className="h-4 w-4 text-blue-500" />
+                        Collaborators
+                      </Label>
+                      <Input
+                        id="collaborators"
+                        aria-label="Collaborators"
+                        type="number"
+                        min={0}
+                        value={subscription.collaborators}
+                        onChange={(e) =>
+                          handleInputChange("collaborators", e.target.value)
+                        }
+                        className="rounded-lg border border-gray-300 shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      />
+                      <p className="text-sm text-gray-600 mt-1">
+                        5 collaborators included in base plan.
+                      </p>
                     </div>
-                </div>
+
+                    {/* Points of Sale */}
+                    <div className="flex flex-col gap-2">
+                      <Label
+                        htmlFor="pointsOfSale"
+                        className="flex items-center gap-2 font-medium text-gray-700"
+                      >
+                        <Store className="h-4 w-4 text-blue-500" />
+                        Points of Sale
+                      </Label>
+                      <Input
+                        id="pointsOfSale"
+                        aria-label="Points of Sale"
+                        type="number"
+                        min={0}
+                        value={subscription.pointsOfSale}
+                        onChange={(e) =>
+                          handleInputChange("pointsOfSale", e.target.value)
+                        }
+                        className="rounded-lg border border-gray-300 shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      />
+                      <p className="text-sm text-gray-600 mt-1">
+                        1 point of sale included in base plan.
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Pricing Details Table */}
+              <Card className="shadow rounded-2xl border-none bg-white transition-transform transform hover:scale-105 hover:shadow-xl duration-300">
+                <CardHeader className="p-6 pb-0">
+                  <CardTitle className="text-2xl font-bold text-gray-800">
+                    Pricing Details
+                  </CardTitle>
+                  <CardDescription className="text-gray-600">
+                    Cost breakdown for each resource.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="p-6">
+                  <Table>
+                    <TableHeader>
+                      <TableRow className="bg-gray-50">
+                        <TableHead className="font-semibold text-gray-700">
+                          Resource
+                        </TableHead>
+                        <TableHead className="font-semibold text-gray-700">
+                          Included
+                        </TableHead>
+                        <TableHead className="text-right font-semibold text-gray-700">
+                          {billingCycle === "monthly" ? "Monthly" : "Yearly"}
+                        </TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {pricingData.map((item, index) => (
+                        <TableRow
+                          key={item.resource + "-" + index}
+                          className="hover:bg-gray-50 transition-colors"
+                        >
+                          <TableCell className="font-medium text-gray-800">
+                            {item.resource}
+                          </TableCell>
+                          <TableCell className="text-gray-600">
+                            {item.included}
+                          </TableCell>
+                          <TableCell className="text-right font-semibold text-gray-700">
+                            {billingCycle === "monthly"
+                              ? item.monthly
+                              : item.yearly}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
             </div>
+
+            {/* Results Panel */}
+            <div className="lg:col-span-2 space-y-8">
+              <Card className="shadow rounded-2xl border-none bg-white p-6 h-full flex flex-col transition-transform transform hover:scale-105 hover:shadow-xl duration-300">
+                <CardHeader className="p-0 mb-6">
+                  <CardTitle className="flex items-center gap-3 text-2xl font-bold text-gray-800">
+                    <Building className="h-6 w-6 text-blue-600" />
+                    Cost Breakdown
+                  </CardTitle>
+                  <CardDescription className="text-gray-600 mt-2">
+                    View the total monthly/yearly cost based on your selections.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="p-0 flex-grow flex flex-col md:flex-row gap-8 md:gap-10">
+                  {/* Total Cost */}
+                  <div className="flex flex-col items-center justify-center flex-shrink-0 w-full md:w-1/3 bg-gray-100 rounded-2xl p-6">
+                    <span className="text-lg font-semibold text-gray-700">
+                      Total {billingCycle === "monthly" ? "Monthly" : "Yearly"} Cost
+                    </span>
+                    <span className="mt-4 text-4xl font-extrabold text-blue-600">
+                      {totalCost.toLocaleString("en-US", {
+                        style: "currency",
+                        currency: "USD",
+                      })}
+                    </span>
+                  </div>
+
+                  {/* Pie Chart: Cost Breakdown */}
+                  <div className="w-full md:w-2/3 max-w-lg h-72 sm:h-80 md:h-72">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={costBreakdownData}
+                          dataKey="value"
+                          nameKey="name"
+                          cx="50%"
+                          cy="50%"
+                          outerRadius={90}
+                          label={({ name, percent }) =>
+                            `${name}: ${(percent * 100).toFixed(0)}%`
+                          }
+                        >
+                          {costBreakdownData.map((entry, idx) => (
+                            <Cell
+                              key={`pie-cell-${idx}`}
+                              fill={COLORS[idx % COLORS.length]}
+                            />
+                          ))}
+                        </Pie>
+                        <Tooltip
+                          formatter={(value) =>
+                            value.toLocaleString("en-US", {
+                              style: "currency",
+                              currency: "USD",
+                            })
+                          }
+                        />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Resource Usage Bar Chart */}
+            <Card className="mt-8 w-full max-w-4xl border-0 bg-white/80 backdrop-blur-sm shadow-lg rounded-xl overflow-hidden transition-all duration-500 hover:shadow-2xl">
+        <CardHeader className="p-6 pb-4 border-b border-gray-100">
+          <CardTitle className="flex items-center gap-3 text-xl font-semibold text-gray-800">
+            <div className="p-2 rounded-lg bg-blue-50">
+              <Users className="h-5 w-5 text-blue-600" />
+            </div>
+            Resource Usage Overview
+          </CardTitle>
+          <CardDescription className="text-gray-500 mt-1 text-sm">
+            Track your consumption against plan limits
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="p-6">
+          <div className="h-80">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={resourceUsageData}
+                margin={{ top: 20, right: 30, left: 20, bottom: 30 }}
+                barGap={8}
+              >
+                <CartesianGrid 
+                  strokeDasharray="4 4" 
+                  vertical={false} 
+                  stroke="#f0f0f0" 
+                />
+                <XAxis 
+                  dataKey="name" 
+                  axisLine={false}
+                  tickLine={false}
+                  tickMargin={10}
+                  tick={{ fill: '#6b7280', fontSize: 12 }}
+                />
+                <YAxis 
+                  axisLine={false}
+                  tickLine={false}
+                  tickMargin={10}
+                  tick={{ fill: '#6b7280', fontSize: 12 }}
+                  tickFormatter={(value) => `${value / 1000}k`}
+                />
+                <Tooltip
+                  contentStyle={{ 
+                    backgroundColor: 'white',
+                    borderRadius: '8px',
+                    border: '1px solid #e5e7eb',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.05)'
+                  }}
+                  formatter={(value) => [value, 'Resources']}
+                  labelStyle={{ fontWeight: 600, color: '#1f2937' }}
+                />
+                <Legend 
+                  verticalAlign="top" 
+                  height={40}
+                  wrapperStyle={{ paddingBottom: '20px' }}
+                />
+                <Bar
+                  dataKey="included"
+                  name="Plan Allocation"
+                  fill="#93c5fd"
+                  radius={[4, 4, 0, 0]}
+                  barSize={24}
+                />
+                <Bar
+                  dataKey="used"
+                  name="Current Usage"
+                  fill="#3b82f6"
+                  radius={[4, 4, 0, 0]}
+                  barSize={24}
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </CardContent>
+      </Card>
+            </div>
+          </div>
         </div>
-    );
+      </main>
+
+      <Footer />
+    </div>
+  );
 }
-export default SubscriptionCalculator
+
+export default SubscriptionCalculator;
